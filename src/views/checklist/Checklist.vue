@@ -45,11 +45,20 @@
                         >view</v-btn
                       > -->
                       <v-btn
+                        class="ma-1"
                         color="error"
                         x-small
                         @click="deleteCheklistItem(item.id)"
                       >
                         <v-icon x-small>mdi-delete</v-icon>
+                      </v-btn>
+                      <v-btn
+                        class="ma-1"
+                        color="success"
+                        x-small
+                        @click="openEdit(item, check.id)"
+                      >
+                        <v-icon x-small>mdi-pencil</v-icon>
                       </v-btn>
                     </v-list-item-action>
                     <v-list-item-content>
@@ -79,6 +88,14 @@
         </v-row>
       </v-col>
     </v-row>
+
+    <dialog-edit
+      v-if="dialogEdit"
+      :dialog.sync="dialogEdit"
+      :item="dialogItem"
+      :checklistId="checklistId"
+      @refresh="refresh"
+    />
   </v-container>
 </template>
 
@@ -87,6 +104,7 @@ import * as config from "@/config/config";
 import auth from "@/config/auth";
 
 import ItemField from "@/components/AddItem";
+import DialogEdit from "@/components/DialogEdit";
 
 export default {
   data() {
@@ -98,17 +116,27 @@ export default {
       checklists: [],
       params: {
         name: ""
-      }
+      },
+      dialogEdit: false,
+      dialogItem: "",
+      checklistId: 0
     };
   },
   components: {
-    ItemField
+    ItemField,
+    DialogEdit
   },
   mounted() {
     this.getChecklist();
   },
   methods: {
+    openEdit(item, checklistId) {
+      this.dialogItem = item;
+      this.dialogEdit = true;
+      this.checklistId = checklistId;
+    },
     refresh() {
+      this.dialogEdit = false;
       this.getChecklist();
     },
     getChecklist() {
